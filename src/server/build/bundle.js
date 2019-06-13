@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 16);
+/******/ 	return __webpack_require__(__webpack_require__.s = 17);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -778,12 +778,103 @@ module.exports = require("passport");
 
 /***/ }),
 /* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _defineProperty2 = __webpack_require__(26);
+
+var _defineProperty3 = _interopRequireDefault(_defineProperty2);
+
+var _classCallCheck2 = __webpack_require__(27);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = __webpack_require__(28);
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _extends3 = __webpack_require__(4);
+
+var _extends4 = _interopRequireDefault(_extends3);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _id = function _id() {
+    return (1 + Math.random() * 12946127295).toString(16).replace(".", "");
+};
+
+var _findindex = function _findindex(key, value, users) {
+    return users.reduce(function (acc, user, idx) {
+        if (user[key] === value) {
+            return idx;
+        }
+        return acc;
+    }, -1);
+};
+
+var _finduser = function _finduser(key, value, users) {
+    var index = _findindex(key, value, users);
+    if (index != -1) {
+        return (0, _extends4.default)({}, users[index]);
+    }
+    return null;
+};
+
+var User = function () {
+    function User() {
+        (0, _classCallCheck3.default)(this, User);
+
+        this._users = [];
+    }
+
+    (0, _createClass3.default)(User, [{
+        key: "findOne",
+        value: function findOne(key, value) {
+            return _finduser(key, value, this._users);
+        }
+    }, {
+        key: "save",
+        value: function save(user) {
+            var _user = (0, _extends4.default)({
+                _id: _id()
+            }, user);
+            this._users.push(_user);
+            return _user;
+        }
+    }, {
+        key: "findById",
+        value: function findById(_id) {
+            return _finduser("_id", _id, this._users);
+        }
+    }, {
+        key: "update",
+        value: function update(key, value, setkey, setvalue) {
+            var index = _findindex(key, value, this._users);
+            if (index != -1) {
+                this.users[index] = (0, _extends4.default)({}, this.users[index], (0, _defineProperty3.default)({}, setkey, setvalue));
+                return (0, _extends4.default)({}, this.users[index]);
+            }
+        }
+    }]);
+    return User;
+}();
+
+exports.default = User;
+
+/***/ }),
+/* 14 */
 /***/ (function(module, exports) {
 
 module.exports = require("superagent");
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1109,7 +1200,7 @@ function removeTempFile(fileName) {
 }
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1167,14 +1258,14 @@ module.exports = nodebackForPromise;
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(17);
+module.exports = __webpack_require__(18);
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1192,7 +1283,7 @@ var _asyncToGenerator2 = __webpack_require__(11);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _http = __webpack_require__(18);
+var _http = __webpack_require__(19);
 
 var _http2 = _interopRequireDefault(_http);
 
@@ -1200,21 +1291,21 @@ var _express = __webpack_require__(2);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _expressSession = __webpack_require__(19);
+var _expressSession = __webpack_require__(20);
 
 var _expressSession2 = _interopRequireDefault(_expressSession);
 
-var _memorystore = __webpack_require__(20);
+var _memorystore = __webpack_require__(21);
 
 var _memorystore2 = _interopRequireDefault(_memorystore);
 
-var _bodyParser = __webpack_require__(21);
+var _bodyParser = __webpack_require__(22);
 
 var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
-var _config = __webpack_require__(22);
+var _config = __webpack_require__(23);
 
-var _strategies = __webpack_require__(23);
+var _strategies = __webpack_require__(24);
 
 var _strategies2 = _interopRequireDefault(_strategies);
 
@@ -1226,8 +1317,16 @@ var _websocket = __webpack_require__(7);
 
 var _websocket2 = _interopRequireDefault(_websocket);
 
+var _shimuser = __webpack_require__(13);
+
+var _shimuser2 = _interopRequireDefault(_shimuser);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var User = new _shimuser2.default();
+
+console.log("have class user", User);
+User.findOne();
 //TODO get rid of dependencies on redis and mongo to slim right down!
 //get the git stuff working with a form (..if not done?)
 
@@ -1389,31 +1488,31 @@ function start(config) {
 }
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports) {
 
 module.exports = require("http");
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports) {
 
 module.exports = require("express-session");
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports) {
 
 module.exports = require("memorystore");
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports) {
 
 module.exports = require("body-parser");
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1561,7 +1660,7 @@ function defaultsettings() {
 }
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1576,9 +1675,13 @@ var _passport = __webpack_require__(12);
 
 var _passport2 = _interopRequireDefault(_passport);
 
-var _passportGithub = __webpack_require__(24);
+var _passportGithub = __webpack_require__(25);
 
 var _passportGithub2 = _interopRequireDefault(_passportGithub);
+
+var _shimuser = __webpack_require__(13);
+
+var _shimuser2 = _interopRequireDefault(_shimuser);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1598,7 +1701,8 @@ function initPassport(app, config) {
 		return;
 	}
 
-	var User = __webpack_require__(25);
+	var User = new _shimuser2.default();
+	console.log("have user", User);
 
 	app.use(_passport2.default.initialize());
 	app.use(_passport2.default.session());
@@ -1638,100 +1742,10 @@ function initPassport(app, config) {
 }
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports) {
 
 module.exports = require("passport-github");
-
-/***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.User = undefined;
-
-var _defineProperty2 = __webpack_require__(26);
-
-var _defineProperty3 = _interopRequireDefault(_defineProperty2);
-
-var _classCallCheck2 = __webpack_require__(27);
-
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-var _createClass2 = __webpack_require__(28);
-
-var _createClass3 = _interopRequireDefault(_createClass2);
-
-var _extends3 = __webpack_require__(4);
-
-var _extends4 = _interopRequireDefault(_extends3);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var _id = function _id() {
-    return (1 + Math.random() * 12946127295).toString(16).replace(".", "");
-};
-
-var _findindex = function _findindex(key, value, users) {
-    return users.reduce(function (acc, user, idx) {
-        if (user[key] === value) {
-            return idx;
-        }
-        return acc;
-    }, -1);
-};
-
-var _finduser = function _finduser(key, value, users) {
-    var index = _findindex(key, value, users);
-    if (index != -1) {
-        return (0, _extends4.default)({}, users[index]);
-    }
-    return null;
-};
-
-var User = exports.User = function () {
-    function User() {
-        (0, _classCallCheck3.default)(this, User);
-
-        this._users = [];
-    }
-
-    (0, _createClass3.default)(User, [{
-        key: "findOne",
-        value: function findOne(key, value) {
-            return _finduser(key, value, this._users);
-        }
-    }, {
-        key: "save",
-        value: function save(user) {
-            var _user = (0, _extends4.default)({
-                _id: _id()
-            }, user);
-            this._users.push(_user);
-            return _user;
-        }
-    }, {
-        key: "findById",
-        value: function findById(_id) {
-            return _finduser("_id", _id, this._users);
-        }
-    }, {
-        key: "update",
-        value: function update(key, value, setkey, setvalue) {
-            var index = _findindex(key, value, this._users);
-            if (index != -1) {
-                this.users[index] = (0, _extends4.default)({}, this.users[index], (0, _defineProperty3.default)({}, setkey, setvalue));
-                return (0, _extends4.default)({}, this.users[index]);
-            }
-        }
-    }]);
-    return User;
-}();
 
 /***/ }),
 /* 26 */
@@ -1829,7 +1843,7 @@ var _express = __webpack_require__(2);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _superagent = __webpack_require__(13);
+var _superagent = __webpack_require__(14);
 
 var _superagent2 = _interopRequireDefault(_superagent);
 
@@ -1837,7 +1851,7 @@ var _docker = __webpack_require__(9);
 
 var _docker2 = _interopRequireDefault(_docker);
 
-var _utils = __webpack_require__(14);
+var _utils = __webpack_require__(15);
 
 var _websocket = __webpack_require__(7);
 
@@ -2926,7 +2940,7 @@ var _express = __webpack_require__(2);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _superagent = __webpack_require__(13);
+var _superagent = __webpack_require__(14);
 
 var _superagent2 = _interopRequireDefault(_superagent);
 
@@ -2940,7 +2954,7 @@ var _stream2 = _interopRequireDefault(_stream);
 
 var _websocket = __webpack_require__(7);
 
-var _utils = __webpack_require__(14);
+var _utils = __webpack_require__(15);
 
 var _minimist = __webpack_require__(6);
 
@@ -3574,7 +3588,7 @@ var CapturedTrace = debug.CapturedTrace;
 var PassThroughHandlerContext =
     __webpack_require__(49)(Promise, tryConvertToPromise);
 var catchFilter = __webpack_require__(50)(NEXT_FILTER);
-var nodebackForPromise = __webpack_require__(15);
+var nodebackForPromise = __webpack_require__(16);
 var errorObj = util.errorObj;
 var tryCatch = util.tryCatch;
 function check(self, executor) {
@@ -7611,7 +7625,7 @@ Promise.prototype.asCallback = Promise.prototype.nodeify = function (nodeback,
 module.exports = function(Promise, INTERNAL) {
 var THIS = {};
 var util = __webpack_require__(0);
-var nodebackForPromise = __webpack_require__(15);
+var nodebackForPromise = __webpack_require__(16);
 var withAppended = util.withAppended;
 var maybeWrapAsError = util.maybeWrapAsError;
 var canEvaluate = util.canEvaluate;

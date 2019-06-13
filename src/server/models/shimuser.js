@@ -20,7 +20,7 @@ const _finduser = (key, value, users)=>{
     return null;
 }
 
-export class User{
+export default class User{
     
     constructor(){
         this._users = [];

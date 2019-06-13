@@ -1,5 +1,7 @@
 import passport  from 'passport';
 import passportGithub from 'passport-github';
+import user from './models/shimuser';
+
 const GitHubStrategy = passportGithub.Strategy;
 
 export default function initPassport(app, config){
@@ -12,8 +14,9 @@ export default function initPassport(app, config){
 		return;
 	}
 	
-	
-	var User = require('./models/shimuser');
+
+	const  User = new user();
+	console.log("have user", User);
 
 	app.use(passport.initialize());
 	app.use(passport.session());
