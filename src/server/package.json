@@ -30,7 +30,7 @@
     "passport": "^0.3.2",
     "passport-github": "^1.1.0",
     "socket.io": "^2.1.1",
-    "superagent": "^2.0.0",
+    "superagent": "^5.0.8",
     "tar-stream": "^1.6.1"
   },
   "devDependencies": {
