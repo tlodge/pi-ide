@@ -1,0 +1,69 @@
+#registry:
+#  restart: always
+#  image: registry:2
+#  ports:
+#    - 5000:5000
+
+redis:
+  image:
+    tlodge/databox-redis
+  ports:
+    - "6379:6379"
+  container_name:
+    redis
+
+mongo:
+  image:
+    tlodge/mongo
+  ports:
+    - "27017:27017"
+  command:
+    /usr/bin/mongod --dbpath /data/mongo --smallfiles
+  container_name:
+    mongo
+
+appserver:
+  image:
+    tlodge/databox-app-server
+  ports:
+    - "8091:8091"
+  links:
+    - mongo
+  command:
+    /root/start.sh
+  container_name:
+    app-server
+
+mock-datasource:
+  image:
+    tlodge/databox-datasource-mock
+  command:
+    node index.js
+  container_name:
+    mock-datasource
+
+databox-test-server:
+  image:
+    tlodge/databox-test-server
+  links:
+    - redis
+    - mongo
+  ports:
+    - "9090:9090"
+    - "8435:8435"
+  container_name:
+    databox-test-server
+  command:
+    node index.js
+
+#openface:
+#  image:
+#    tlodge/openface
+#  ports:
+#    - "9001"
+#  volumes:
+#    - ${HOSTMOUNT}/openface/red/:/root/openface/demos/red/
+#  container_name:
+#    openface
+#  command:
+#    /root/start.sh

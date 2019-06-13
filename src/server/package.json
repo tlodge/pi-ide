@@ -1,0 +1,47 @@
+{
+  "name": "databox-sdk",
+  "version": "1.0.0",
+  "description": "databox sdk server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pm": "pm2 start server.js --name editor --interpreter ./node_modules/.bin/babel-node",
+    "start": "nodemon --ignore 'flow*.flow' --exec babel-node server.js",
+    "dev": "npm run compose && nodemon --ignore 'flow*.flow' --exec babel-node server.js --port 9000 --dev",
+    "stop": "docker-compose stop && docker-compose rm -f",
+    "base": "docker build --no-cache -t databox-sdk-base -f Dockerfile.base . && docker tag databox-sdk-base tlodge/databox-sdk-base && docker push tlodge/databox-sdk-base",
+    "build": "webpack --progress",
+    "docker": "docker build --no-cache -t databox-sdk .",
+    "release": "docker tag databox-sdk tlodge/databox-sdk && docker push tlodge/databox-sdk",
+    "deploy": "npm run build && npm run docker && npm run release",
+    "compose": "docker-compose up -d"
+  },
+  "author": "Tom Lodge",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "connect-redis": "^3.3.3",
+    "dockerode": "^2.5.5",
+    "ejs": "^2.6.1",
+    "express": "^4.16.3",
+    "express-session": "^1.13.0",
+    "http": "0.0.0",
+    "memorystore": "^1.6.1",
+    "passport": "^0.3.2",
+    "passport-github": "^1.1.0",
+    "socket.io": "^2.1.1",
+    "superagent": "^2.0.0",
+    "tar-stream": "^1.6.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.9.0",
+    "babel-plugin-transform-decorators-legacy": "^1.3.5",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-es2015": "^6.9.0",
+    "nodemon": "^1.17.5",
+    "react-hot-loader": "^1.3.1",
+    "webpack": "^3.12.0",
+    "webpack-node-externals": "^1.7.2"
+  }
+}

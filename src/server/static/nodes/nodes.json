@@ -1,0 +1,76 @@
+{
+	"nodes": [
+		{
+			"name": "timer",
+			"file": "inputs/inject/index"
+		},
+		{
+			"name": "bulbs-in",
+			"file": "datastores/bulbs/index"
+		},
+		{
+			"name": "plugin",
+			"file": "datastores/plug/index"
+		},
+		{
+			"name": "sensingkit",
+			"file": "datastores/sensingkit/index"
+		},
+		{
+			"name": "osmonitor",
+			"file": "datastores/osmonitor/index"
+		},
+		{
+			"name": "twitter",
+			"file": "datastores/twitter/index"
+		},
+		{
+			"name": "dbfunction",
+			"file": "processors/function/index"
+		},
+		{
+			"name": "extract",
+			"file": "processors/extract/index"
+		},
+		{
+			"name": "rules",
+			"file": "processors/rules/index"
+		},
+		{
+			"name": "chartify",
+			"file": "processors/chartify/index"
+		},
+		{
+			"name": "listify",
+			"file": "processors/listify/index"
+		},
+		{
+			"name": "webify",
+			"file": "processors/webify/index"
+		},
+		{
+			"name": "uibuilder",
+			"file": "processors/uibuilder/index"
+		},
+		{
+			"name": "export",
+			"file": "outputs/export/index"
+		},
+		{
+			"name": "bulbs-out",
+			"file": "outputs/bulbs/index"
+		},
+		{
+			"name": "databoxapp",
+			"file": "outputs/databoxapp/index"
+		},
+		{
+			"name": "plugout",
+			"file": "outputs/plug/index"
+		},
+		{
+			"name": "debugger",
+			"file": "debug/debugger/index"
+		}
+	]
+}

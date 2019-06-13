@@ -1,0 +1,40 @@
+text.icon {
+	font-family: "Font Awesome 5 Free", "Font Awesome 5 Brands";
+    font-size: 30px;
+    fill: white;
+    text-anchor: middle;
+    -moz-user-select: none;
+   	-khtml-user-select: none;
+   	-webkit-user-select: none;
+}
+
+text.badge{
+	font-family: monaco, Consolas, "Lucida Console", monospace;
+    font-size: 12px;
+    font-weight: bold;
+    fill: white;
+    text-anchor: middle;
+    -moz-user-select: none;
+   	-khtml-user-select: none;
+   	-webkit-user-select: none;
+}
+
+text.accuracy{
+    font-size: 10px;
+    font-weight: bold;
+    fill: white;
+    text-anchor: middle;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+}
+
+text.warning {
+  font-family: "Font Awesome 5 Free";
+    font-size: 18px;
+    fill: #d40000;
+    text-anchor: middle;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+}

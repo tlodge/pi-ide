@@ -1,0 +1,25 @@
+{
+  "name": "node-library",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./lib/store.js",
+  "scripts": {
+    "build": "webpack"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "node-sass": "^4.10.0",
+    "react-redux": "^5.0.5",
+    "redux": "^3.7.2"
+  },
+  "devDependencies": {
+    "babel-loader": "^7.1.5",
+    "babel-plugin-add-module-exports": "^1.0.0",
+    "css-loader": "^1.0.1",
+    "sass-loader": "^7.1.0",
+    "webpack": "^4.26.1",
+    "webpack-cli": "^3.1.2"
+  }
+}
