@@ -7,7 +7,11 @@ import { fetch, write } from './config';
 import initPassport from './strategies';
 import minimist from 'minimist';
 import init from './utils/websocket';
-
+import uibuilder from './routes/uibuilder';
+import authroute from './routes/auth';
+import nodered from './routes/nodered';
+import samples from './routes/samples';
+import github from './routes/github';
 
 //TODO get rid of dependencies on redis and mongo to slim right down!
 //get the git stuff working with a form (..if not done?)
@@ -34,11 +38,11 @@ function checkcredentials(config) {
 
 function addroutes(app, auth) {
   console.log("adding routes");
-  app.use('/auth', require('./routes/auth'));
-  app.use('/github', auth, require('./routes/github'));
-  app.use('/nodered', auth, require('./routes/nodered'));
-  app.use('/samples', auth, require('./routes/samples'));
-  app.use('/uibuilder', auth, require('./routes/uibuilder'));
+  app.use('/auth', authroute);
+  app.use('/github', auth, github);
+  app.use('/nodered', auth, nodered);
+  app.use('/samples', auth, samples);
+  app.use('/uibuilder', auth, uibuilder);
   console.log("successfully added routes");
 }
 

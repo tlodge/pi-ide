@@ -26,5 +26,5 @@ router.get('/github/callback', passport.authenticate('github', { failureRedirect
     res.redirect('/');
 });
 
-module.exports = router;
+export default router;
 

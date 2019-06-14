@@ -342,4 +342,4 @@ router.post('/flows', function (req, res) {
 	}
 });
 
-module.exports = router;
+export default router;
