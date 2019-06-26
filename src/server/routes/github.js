@@ -299,15 +299,15 @@ const _generateDockerfile = function (libraries, config, name) {
 
 	//add a echo statement to force it not to cache (nocache option in build doesn't seem to work
 	const dcommands = [
-		`FROM tlodge/databox-red:latest`,
-		`ADD flows.json /data/flows.json`,
+		`FROM tlodge/databox-red-arm64:latest`,
+		`ADD flows.json /home/databox/data/flows.json`,
 		'LABEL databox.type="app"',
 		`LABEL databox.manifestURL="${config.appstore.URL}/${name.toLowerCase()}/databox-manifest.json"`,
 	];
 
 	const startcommands = [
 		"EXPOSE 8080",
-		"CMD /root/start.sh"
+		"CMD /home/databox/start.sh"
 	];
 
 	return [...dcommands, ...libcommands, ...startcommands].join("\n");
@@ -456,8 +456,8 @@ const _buildImage = async (config, user, manifest, flows, dockerfile) => {
 
 
 	sendmessage(user.username, "debug", { msg: "pulling latest base container" });
-
-	await _pull("tlodge/databox-red:latest").catch((err) => {
+	
+	await _pull("tlodge/databox-red-arm64:latest").catch((err) => {
 		console.log("failed to pull latest base image!");
 		sendmessage(user.username, "debug", { msg: "could not pull latest image", err });
 		throw (err);
@@ -478,7 +478,7 @@ const _buildImage = async (config, user, manifest, flows, dockerfile) => {
 	const _appname = manifest.name.toLowerCase();//.replace(`${user.username}-`, "");
 	const _tag = config.registry.URL && config.registry.URL.trim() != "" ? `${_stripscheme(config.registry.URL)}` : `${user.username.toLowerCase()}`;
 
-	const tag = await createDockerImage(tarfile, `${_tag}/${_appname}-amd64:${config.version || "latest"}`).catch((err) => {
+	const tag = await createDockerImage(tarfile, `${_tag}/${_appname}-arm64:${config.version || "latest"}`).catch((err) => {
 		console.log("failed to create docker image", err);
 		sendmessage(user.username, "debug", { msg: err });
 		throw (err);
@@ -830,7 +830,31 @@ const _saveManifestToStore = async (config, user, content, filename) => {
 	}
 };
 
+
 router.post('/publish', async (req, res) => {
+	
+	const user = req.user;
+
+	const manifest = {
+		...req.body.manifest,
+		datasources: [...req.body.manifest.datasources]
+	}
+
+	const flows = req.body.flows;
+	
+	const libraries = dedup(flatten(flows.reduce((acc, node) => {
+		if (node.type === "dbfunction") {
+			acc = [...acc, matchLibraries(node.func)];
+		}
+		return acc;
+	}, [])));
+	
+	const dockerfile = _generateDockerfile(libraries, req.config, manifest.name);
+	await _buildImage(req.config, user, manifest, JSON.stringify(flows), dockerfile);
+});
+
+
+/*router.post('/publish', async (req, res) => {
 	const user = req.user;
 	const repo = req.body.repo;
 	const manifest = {
@@ -912,7 +936,7 @@ router.post('/publish', async (req, res) => {
 			}
 		});
 	}
-});
+});*/
 
 
 
