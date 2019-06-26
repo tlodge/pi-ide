@@ -2006,8 +2006,8 @@ var _generateDockerfile = function _generateDockerfile(libraries, config, name) 
     return "RUN cd /data/nodes/databox && npm install --save ".concat(library);
   }); //add a echo statement to force it not to cache (nocache option in build doesn't seem to work
 
-  var dcommands = ["FROM tlodge/databox-red:latest", "ADD flows.json /data/flows.json", 'LABEL databox.type="app"', "LABEL databox.manifestURL=\"".concat(config.appstore.URL, "/").concat(name.toLowerCase(), "/databox-manifest.json\"")];
-  var startcommands = ["EXPOSE 8080", "CMD /root/start.sh"];
+  var dcommands = ["FROM databox/red-arm64:latest", "ADD flows.json /home/databox/data/flows.json", 'LABEL databox.type="app"', "LABEL databox.manifestURL=\"".concat(config.appstore.URL, "/").concat(name.toLowerCase(), "/databox-manifest.json\"")];
+  var startcommands = ["EXPOSE 8080", "CMD /home/databox/start.sh"];
   return [].concat(dcommands, __WEBPACK_IMPORTED_MODULE_1__babel_runtime_helpers_toConsumableArray___default()(libcommands), startcommands).join("\n");
 };
 
@@ -2061,22 +2061,24 @@ var _generateManifest = function _generateManifest(config, user, reponame, app, 
 
 var _pull = function _pull(repo) {
   return new Promise(function (resolve, reject) {
-    __WEBPACK_IMPORTED_MODULE_6__utils_docker__["a" /* default */].pull(repo, function (err, stream) {
-      __WEBPACK_IMPORTED_MODULE_6__utils_docker__["a" /* default */].modem.followProgress(stream, onFinished, onProgress);
-
-      function onFinished(err, output) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(output);
-        }
-      }
-
-      function onProgress(event) {
-        console.log(event);
-      }
-    });
+    console.log("pulling repo", repo);
+    resolve("pulled repo");
   });
+  /*return new Promise((resolve, reject) => {
+  	docker.pull(repo, (err, stream) => {
+  		docker.modem.followProgress(stream, onFinished, onProgress);
+  			function onFinished(err, output) {
+  			if (err) {
+  				reject(err);
+  			} else {
+  				resolve(output);
+  			}
+  		}
+  		function onProgress(event) {
+  			console.log(event);
+  		}
+  		});
+  })*/
 };
 
 var _stripscheme = function _stripscheme(url) {
@@ -2099,8 +2101,9 @@ var _uploadImageToRegistry = function _uploadImageToRegistry(tag, registry, user
           console.log("FINISHED PUSHING IMAGE!");
 
           if (err) {
+            console.log(err);
             Object(__WEBPACK_IMPORTED_MODULE_8__utils_websocket__["b" /* sendmessage */])(username, "debug", {
-              msg: err.json.message
+              msg: "error pushing image!"
             });
             reject(err);
           } else {
@@ -2158,7 +2161,7 @@ function () {
               msg: "pulling latest base container"
             });
             _context2.next = 3;
-            return _pull("tlodge/databox-red:latest")["catch"](function (err) {
+            return _pull("databox/red-arm64:latest")["catch"](function (err) {
               console.log("failed to pull latest base image!");
               Object(__WEBPACK_IMPORTED_MODULE_8__utils_websocket__["b" /* sendmessage */])(user.username, "debug", {
                 msg: "could not pull latest image",
@@ -2190,7 +2193,7 @@ function () {
 
             _tag = config.registry.URL && config.registry.URL.trim() != "" ? "".concat(_stripscheme(config.registry.URL)) : "".concat(user.username.toLowerCase());
             _context2.next = 13;
-            return Object(__WEBPACK_IMPORTED_MODULE_7__utils_utils__["a" /* createDockerImage */])(tarfile, "".concat(_tag, "/").concat(_appname, "-amd64:").concat(config.version || "latest"))["catch"](function (err) {
+            return Object(__WEBPACK_IMPORTED_MODULE_7__utils_utils__["a" /* createDockerImage */])(tarfile, "".concat(_tag, "/").concat(_appname, "-arm64:").concat(config.version || "latest"))["catch"](function (err) {
               console.log("failed to create docker image", err);
               Object(__WEBPACK_IMPORTED_MODULE_8__utils_websocket__["b" /* sendmessage */])(user.username, "debug", {
                 msg: err
@@ -2203,21 +2206,17 @@ function () {
             Object(__WEBPACK_IMPORTED_MODULE_8__utils_websocket__["b" /* sendmessage */])(user.username, "debug", {
               msg: "uploading to registry with tag ".concat(tag)
             });
-            _context2.next = 17;
-            return _uploadImageToRegistry(tag, "".concat(config.registry.URL), user.username.toLowerCase())["catch"](function (err) {
-              Object(__WEBPACK_IMPORTED_MODULE_8__utils_websocket__["b" /* sendmessage */])(user.username, "debug", {
-                msg: err
-              });
-              console.log("failed to upload image to registry!", err);
-              throw err;
-            });
+            /*await _uploadImageToRegistry(tag, `${config.registry.URL}`, user.username.toLowerCase()).catch((err) => {
+            	sendmessage(user.username, "debug", { msg: err });
+            	console.log("failed to upload image to registry!", err);
+            	throw (err);
+            });*/
 
-          case 17:
             Object(__WEBPACK_IMPORTED_MODULE_8__utils_websocket__["b" /* sendmessage */])(user.username, "debug", {
               msg: "successfully published"
             });
 
-          case 18:
+          case 16:
           case "end":
             return _context2.stop();
         }
@@ -2634,123 +2633,28 @@ function () {
   var _ref8 = __WEBPACK_IMPORTED_MODULE_3__babel_runtime_helpers_asyncToGenerator___default()(
   /*#__PURE__*/
   __WEBPACK_IMPORTED_MODULE_2__babel_runtime_regenerator___default.a.mark(function _callee6(req, res) {
-    var user, repo, manifest, flows, commitmessage, libraries, dockerfile, manifestfile, flowcontent, manifestcontent, dockerfilecontent, message, flowcommit, dockercommit, manifestcommit, storecommit, reponame, _manifestcontent, values;
-
+    var user, manifest, flows, libraries, dockerfile;
     return __WEBPACK_IMPORTED_MODULE_2__babel_runtime_regenerator___default.a.wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
             user = req.user;
-            repo = req.body.repo;
             manifest = __WEBPACK_IMPORTED_MODULE_0__babel_runtime_helpers_objectSpread___default()({}, req.body.manifest, {
-              datasources: [].concat(__WEBPACK_IMPORTED_MODULE_1__babel_runtime_helpers_toConsumableArray___default()(req.body.manifest.datasources), [{
-                type: "personalLoggerActuator",
-                required: false,
-                name: "personalLoggerActuator",
-                clientid: "personalLoggerActuator",
-                granularites: []
-              }])
+              datasources: __WEBPACK_IMPORTED_MODULE_1__babel_runtime_helpers_toConsumableArray___default()(req.body.manifest.datasources)
             });
             flows = req.body.flows;
-            commitmessage = 'publish commit';
-            Object(__WEBPACK_IMPORTED_MODULE_8__utils_websocket__["b" /* sendmessage */])(user.username, "debug", {
-              msg: "publishing manifest, ".concat(JSON.stringify(manifest, null, 4))
-            }); //first save the manifest and flows file - either create new repo or commit changes	
-
             libraries = Object(__WEBPACK_IMPORTED_MODULE_7__utils_utils__["d" /* dedup */])(Object(__WEBPACK_IMPORTED_MODULE_7__utils_utils__["e" /* flatten */])(flows.reduce(function (acc, node) {
               if (node.type === "dbfunction") {
                 acc = [].concat(__WEBPACK_IMPORTED_MODULE_1__babel_runtime_helpers_toConsumableArray___default()(acc), [Object(__WEBPACK_IMPORTED_MODULE_7__utils_utils__["f" /* matchLibraries */])(node.func)]);
               }
 
               return acc;
-            }, []))); //generate docker file
-
-            dockerfile = _generateDockerfile(libraries, req.config, manifest.name); //generate manifest file
-
-            manifestfile = JSON.stringify(_formatmanifest(manifest, req.config, user), null, 4);
-            Object(__WEBPACK_IMPORTED_MODULE_8__utils_websocket__["b" /* sendmessage */])(user.username, "debug", {
-              msg: "dockerfile, ".concat(dockerfile)
-            });
-
-            if (!(repo && repo.sha && repo.sha.flows && repo.sha.Dockerfile)) {
-              _context6.next = 35;
-              break;
-            }
-
-            //commit
-            Object(__WEBPACK_IMPORTED_MODULE_8__utils_websocket__["b" /* sendmessage */])(user.username, "debug", {
-              msg: "commiting changes"
-            });
-            flowcontent = new Buffer(JSON.stringify(flows, null, 4)).toString('base64');
-            manifestcontent = new Buffer(manifestfile).toString('base64');
-            dockerfilecontent = new Buffer(dockerfile).toString('base64');
-            message = commitmessage;
-            _context6.next = 18;
-            return _createCommit(req.config, user, repo.name, repo.sha.flows, 'flows.json', flowcontent, message, req.user.accessToken);
-
-          case 18:
-            flowcommit = _context6.sent;
-            _context6.next = 21;
-            return _createCommit(req.config, user, repo.name, repo.sha.Dockerfile, 'Dockerfile', dockerfilecontent, message, req.user.accessToken);
-
-          case 21:
-            dockercommit = _context6.sent;
-            _context6.next = 24;
-            return _createCommit(req.config, user, repo.name, repo.sha.manifest, 'databox-manifest.json', manifestcontent, message, req.user.accessToken);
-
-          case 24:
-            manifestcommit = _context6.sent;
-            _context6.next = 27;
-            return _saveManifestToStore(req.config, user, manifestcontent, "".concat(repo.name, "-manifest.json"));
-
-          case 27:
-            storecommit = _context6.sent;
-            _context6.next = 30;
+            }, [])));
+            dockerfile = _generateDockerfile(libraries, req.config, manifest.name);
+            _context6.next = 7;
             return _buildImage(req.config, user, manifest, JSON.stringify(flows), dockerfile);
 
-          case 30:
-            console.log("---flowcommit---", flowcommit.body.content.sha);
-            console.log("full", flowcommit.body.content.sha);
-            res.send({
-              result: 'success',
-              repo: repo.name,
-              sha: {
-                flows: flowcommit.body.content.sha,
-                Dockerfile: dockercommit.body.content.sha,
-                manifest: manifestcommit.body.content.sha
-              }
-            });
-            _context6.next = 46;
-            break;
-
-          case 35:
-            reponame = manifest.name.toLowerCase();
-            _manifestcontent = new Buffer(JSON.stringify(_formatmanifest(manifest, req.config, user), null, 4)).toString('base64');
-            _context6.next = 39;
-            return _createRepo(req.config, user, reponame, manifest.description, flows, dockerfile, manifestfile, commitmessage, req.user.accessToken);
-
-          case 39:
-            values = _context6.sent;
-            console.log("ok values are", values);
-            _context6.next = 43;
-            return _saveManifestToStore(req.config, req.user, _manifestcontent, "".concat(reponame, "-manifest.json"));
-
-          case 43:
-            _context6.next = 45;
-            return _buildImage(req.config, user, manifest, JSON.stringify(flows), dockerfile);
-
-          case 45:
-            res.send({
-              result: 'success',
-              repo: reponame,
-              sha: {
-                flows: values[0].content.sha,
-                Dockerfile: values[1].content.sha,
-                manifest: values[2].content.sha
-              }
-            });
-
-          case 46:
+          case 7:
           case "end":
             return _context6.stop();
         }
@@ -2762,6 +2666,90 @@ function () {
     return _ref8.apply(this, arguments);
   };
 }());
+/*router.post('/publish', async (req, res) => {
+	const user = req.user;
+	const repo = req.body.repo;
+	const manifest = {
+		...req.body.manifest,
+		datasources: [...req.body.manifest.datasources,
+		{
+			type: "personalLoggerActuator",
+			required: false,
+			name: "personalLoggerActuator",
+			clientid: "personalLoggerActuator",
+			granularites: [],
+		}]
+	}
+	const flows = req.body.flows;
+	const commitmessage = 'publish commit';
+	sendmessage(user.username, "debug", { msg: `publishing manifest, ${JSON.stringify(manifest, null, 4)}` });
+
+	//first save the manifest and flows file - either create new repo or commit changes	
+	const libraries = dedup(flatten(flows.reduce((acc, node) => {
+		if (node.type === "dbfunction") {
+			acc = [...acc, matchLibraries(node.func)];
+		}
+		return acc;
+	}, [])));
+
+	//generate docker file
+	const dockerfile = _generateDockerfile(libraries, req.config, manifest.name);
+
+	//generate manifest file
+	const manifestfile = JSON.stringify(_formatmanifest(manifest, req.config, user), null, 4);
+
+	sendmessage(user.username, "debug", { msg: `dockerfile, ${dockerfile}` });
+
+	if (repo && repo.sha && repo.sha.flows && repo.sha.Dockerfile) { //commit
+
+		sendmessage(user.username, "debug", { msg: `commiting changes` });
+		const flowcontent = new Buffer(JSON.stringify(flows, null, 4)).toString('base64');
+		const manifestcontent = new Buffer(manifestfile).toString('base64');
+		const dockerfilecontent = new Buffer(dockerfile).toString('base64');
+		const message = commitmessage;
+
+		const flowcommit = await _createCommit(req.config, user, repo.name, repo.sha.flows, 'flows.json', flowcontent, message, req.user.accessToken);
+		const dockercommit = await _createCommit(req.config, user, repo.name, repo.sha.Dockerfile, 'Dockerfile', dockerfilecontent, message, req.user.accessToken);
+		const manifestcommit = await _createCommit(req.config, user, repo.name, repo.sha.manifest, 'databox-manifest.json', manifestcontent, message, req.user.accessToken)
+
+		//now add manifest to manifest store!
+		const storecommit = await _saveManifestToStore(req.config, user, manifestcontent, `${repo.name}-manifest.json`);
+		await _buildImage(req.config, user, manifest, JSON.stringify(flows), dockerfile);
+
+		console.log("---flowcommit---", flowcommit.body.content.sha);
+
+		console.log("full", flowcommit.body.content.sha);
+
+		res.send({
+			result: 'success',
+			repo: repo.name,
+			sha: {
+				flows: flowcommit.body.content.sha,
+				Dockerfile: dockercommit.body.content.sha,
+				manifest: manifestcommit.body.content.sha,
+			}
+		});
+
+	} else {
+		const reponame = manifest.name.toLowerCase();
+		const manifestcontent = new Buffer(JSON.stringify(_formatmanifest(manifest, req.config, user), null, 4)).toString('base64');
+		const values = await _createRepo(req.config, user, reponame, manifest.description, flows, dockerfile, manifestfile, commitmessage, req.user.accessToken);
+
+		console.log("ok values are", values);
+		await _saveManifestToStore(req.config, req.user, manifestcontent, `${reponame}-manifest.json`);
+		await _buildImage(req.config, user, manifest, JSON.stringify(flows), dockerfile);
+		res.send({
+			result: 'success',
+			repo: reponame,
+			sha: {
+				flows: values[0].content.sha,
+				Dockerfile: values[1].content.sha,
+				manifest: values[2].content.sha,
+			}
+		});
+	}
+});*/
+
 /* harmony default export */ __webpack_exports__["a"] = (router);
 
 /***/ }),

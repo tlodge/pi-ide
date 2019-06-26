@@ -299,7 +299,7 @@ const _generateDockerfile = function (libraries, config, name) {
 
 	//add a echo statement to force it not to cache (nocache option in build doesn't seem to work
 	const dcommands = [
-		`FROM tlodge/databox-red-arm64:latest`,
+		`FROM databox/red-arm64:latest`,
 		`ADD flows.json /home/databox/data/flows.json`,
 		'LABEL databox.type="app"',
 		`LABEL databox.manifestURL="${config.appstore.URL}/${name.toLowerCase()}/databox-manifest.json"`,
@@ -371,7 +371,13 @@ const _generateManifest = function (config, user, reponame, app, packages, allow
 
 
 const _pull = function (repo) {
-	return new Promise((resolve, reject) => {
+ 	return new Promise((resolve, reject)=>{
+		console.log("pulling repo", repo);
+		resolve("pulled repo");
+	});
+
+	
+	/*return new Promise((resolve, reject) => {
 		docker.pull(repo, (err, stream) => {
 			docker.modem.followProgress(stream, onFinished, onProgress);
 
@@ -387,7 +393,7 @@ const _pull = function (repo) {
 			}
 
 		});
-	})
+	})*/
 }
 
 const _stripscheme = function (url) {
@@ -410,7 +416,8 @@ const _uploadImageToRegistry = function (tag, registry, username) {
 				function onFinished(err, output) {
 					console.log("FINISHED PUSHING IMAGE!");
 					if (err) {
-						sendmessage(username, "debug", { msg: err.json.message });
+						console.log(err);
+						sendmessage(username, "debug", { msg: "error pushing image!" });
 						reject(err);
 					} else {
 						sendmessage(username, "debug", { msg: "successfully pushed image!" });
@@ -457,7 +464,7 @@ const _buildImage = async (config, user, manifest, flows, dockerfile) => {
 
 	sendmessage(user.username, "debug", { msg: "pulling latest base container" });
 	
-	await _pull("tlodge/databox-red-arm64:latest").catch((err) => {
+	await _pull("databox/red-arm64:latest").catch((err) => {
 		console.log("failed to pull latest base image!");
 		sendmessage(user.username, "debug", { msg: "could not pull latest image", err });
 		throw (err);
@@ -486,11 +493,11 @@ const _buildImage = async (config, user, manifest, flows, dockerfile) => {
 
 	sendmessage(user.username, "debug", { msg: `uploading to registry with tag ${tag}` });
 
-	await _uploadImageToRegistry(tag, `${config.registry.URL}`, user.username.toLowerCase()).catch((err) => {
+	/*await _uploadImageToRegistry(tag, `${config.registry.URL}`, user.username.toLowerCase()).catch((err) => {
 		sendmessage(user.username, "debug", { msg: err });
 		console.log("failed to upload image to registry!", err);
 		throw (err);
-	});
+	});*/
 
 	sendmessage(user.username, "debug", { msg: "successfully published" });
 
